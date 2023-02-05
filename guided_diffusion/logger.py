@@ -332,7 +332,7 @@ def get_current():
 class Logger(object):
     DEFAULT = None  # A logger with no output files. (See right below class definition)
     # So that you can still log to the terminal without setting up any output files
-    CURRENT = "output"  # Current logger being used by the free functions above
+    CURRENT = None  # Current logger being used by the free functions above
 
     def __init__(self, dir, output_formats, comm=None):
         self.name2val = defaultdict(float)  # values this iteration
