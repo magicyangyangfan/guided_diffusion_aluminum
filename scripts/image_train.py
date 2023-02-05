@@ -15,6 +15,9 @@ from guided_diffusion.script_util import (
 )
 from guided_diffusion.train_util import TrainLoop
 
+import os
+
+os.environ['OPENAI_LOGDIR']='output'
 
 def main():
     args = create_argparser().parse_args()
@@ -59,7 +62,7 @@ def main():
 
 def create_argparser():
     defaults = dict(
-        data_dir="",
+        data_dir="Database",
         schedule_sampler="uniform",
         lr=1e-4,
         weight_decay=0.0,
