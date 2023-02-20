@@ -13,7 +13,7 @@ def load_data(
     data_dir,
     batch_size,
     image_size,
-    class_cond=False,
+    class_cond=True,
     deterministic=False,
     random_crop=False,
     random_flip=True,
@@ -44,8 +44,12 @@ def load_data(
         # Assume classes are the first part of the filename,
         # before an underscore.
         class_names = [bf.basename(path).split("_")[0] for path in all_files]
-        sorted_classes = {x: i for i, x in enumerate(sorted(set(class_names)))}
-        classes = [sorted_classes[x] for x in class_names]
+
+        # sorted_classes = {x: i for i, x in enumerate(sorted(set(class_names)))}
+        # classes = [sorted_classes[x] for x in class_names]
+
+        classes = [_parseFile(class_name) for class_name in class_names]
+
     dataset = ImageDataset(
         image_size,
         all_files,
@@ -119,7 +123,7 @@ class ImageDataset(Dataset):
 
         out_dict = {}
         if self.local_classes is not None:
-            out_dict["y"] = np.array(self.local_classes[idx], dtype=np.int64)
+            out_dict["y"] = np.array(self.local_classes[idx], dtype=np.float32)
         return np.transpose(arr, [2, 0, 1]), out_dict
 
 
@@ -165,3 +169,27 @@ def random_crop_arr(pil_image, image_size, min_crop_frac=0.8, max_crop_frac=1.0)
     crop_y = random.randrange(arr.shape[0] - image_size + 1)
     crop_x = random.randrange(arr.shape[1] - image_size + 1)
     return arr[crop_y : crop_y + image_size, crop_x : crop_x + image_size]
+
+
+dict = {'A356': [0.32, 0.01, 0.00, 0.01, 0.01, 0.00],
+        'A360': [0.43, 0.01, 0.00, 0.00, 0.01, 0.00],
+        'A369': [0.52, 0.02, 0.01, 0.01, 0.01, 0.00],
+        'A339': [0.55, 0.03, 0.04, 0.01, 0.03, 0.02],
+        'A393': [1.00, 0.03, 0.02, 0.00, 0.03, 0.05],
+        'A355': [0.23, 0.01, 0.02, 0.01, 0.01, 0.00],
+        'A308': [0.25, 0.02, 0.09, 0.01, 0.00, 0.00],
+        'A319': [0.27, 0.02, 0.08, 0.01, 0.01, 0.01],
+        'A332': [0.43, 0.02, 0.06, 0.01, 0.06, 0.01],
+        'SandTH3': [0.017],
+        'SandTH1': [0.07],
+        'PermTH2': [0.4],
+        'PermTH1': [1.0],
+        'NM': [0],
+        'M': [1]}
+
+def _parseFile(fileStr):
+    list=[]
+    list += dict[fileStr[:4]]
+    list += dict[fileStr[4:11]]
+    list += dict[fileStr[11:]]
+    return list
