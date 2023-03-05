@@ -475,8 +475,14 @@ class UNetModel(nn.Module):
         )
 
         if self.num_classes is not None:
-            self.label_emb = nn.Embedding(num_classes, time_embed_dim)
-            self.label_linear = nn.Linear(8,time_embed_dim)
+            # self.label_emb = nn.Embedding(num_classes, time_embed_dim)
+            self.label_linear = nn.Sequential(
+                nn.Linear(8,time_embed_dim),
+                nn.SiLU(),
+                nn.Linear(time_embed_dim, time_embed_dim)
+            )
+            print("time_embed_dim type=")
+            print(type(time_embed_dim))
 
         ch = input_ch = int(channel_mult[0] * model_channels)
         self.input_blocks = nn.ModuleList(

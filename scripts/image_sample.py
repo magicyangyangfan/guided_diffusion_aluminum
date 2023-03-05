@@ -44,9 +44,15 @@ def main():
     while len(all_images) * args.batch_size < args.num_samples:
         model_kwargs = {}
         if args.class_cond:
-            classes = th.randint(
-                low=0, high=NUM_CLASSES, size=(args.batch_size,), device=dist_util.dev()
-            )
+            # classes = th.randint(
+            #     low=0, high=NUM_CLASSES, size=(args.batch_size,), device=dist_util.dev()
+            # )
+            classes = np.asarray([float(number) for number in args.label.split(",")])
+            classes = [classes for _ in range (args.batch_size)]
+            classes = np.stack(classes, axis=0)
+            classes = th.tensor(classes).to(th.float32)
+
+
             model_kwargs["y"] = classes
         sample_fn = (
             diffusion.p_sample_loop if not args.use_ddim else diffusion.ddim_sample_loop
@@ -96,7 +102,8 @@ def create_argparser():
         num_samples=10000,
         batch_size=16,
         use_ddim=False,
-        model_path="output/model000000.pt",
+        model_path="",
+        label=""
     )
     defaults.update(model_and_diffusion_defaults())
     parser = argparse.ArgumentParser()
