@@ -481,8 +481,6 @@ class UNetModel(nn.Module):
                 nn.SiLU(),
                 nn.Linear(time_embed_dim, time_embed_dim)
             )
-            print("time_embed_dim type=")
-            print(type(time_embed_dim))
 
         ch = input_ch = int(channel_mult[0] * model_channels)
         self.input_blocks = nn.ModuleList(
