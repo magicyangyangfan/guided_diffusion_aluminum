@@ -46,7 +46,7 @@ def model_and_diffusion_defaults():
     """
     res = dict(
         image_size=64,
-        num_channels=128,
+        num_channels=128, #deepth of uNet model
         num_res_blocks=2,
         num_heads=4,
         num_heads_upsample=-1,
@@ -60,6 +60,7 @@ def model_and_diffusion_defaults():
         resblock_updown=False,
         use_fp16=False,
         use_new_attention_order=False,
+        use_greyScale=True,
     )
     res.update(diffusion_defaults())
     return res
@@ -74,6 +75,7 @@ def classifier_and_diffusion_defaults():
 def create_model_and_diffusion(
     image_size,
     class_cond,
+    use_greyScale,
     learn_sigma,
     num_channels,
     num_res_blocks,
@@ -103,6 +105,7 @@ def create_model_and_diffusion(
         channel_mult=channel_mult,
         learn_sigma=learn_sigma,
         class_cond=class_cond,
+        use_greyScale=use_greyScale,
         use_checkpoint=use_checkpoint,
         attention_resolutions=attention_resolutions,
         num_heads=num_heads,
@@ -134,6 +137,7 @@ def create_model(
     channel_mult="",
     learn_sigma=False,
     class_cond=False,
+    use_greyScale=True,
     use_checkpoint=False,
     attention_resolutions="16",
     num_heads=1,
@@ -165,9 +169,9 @@ def create_model(
 
     return UNetModel(
         image_size=image_size,
-        in_channels=3,
+        in_channels=(1 if use_greyScale else 3),
         model_channels=num_channels,
-        out_channels=(3 if not learn_sigma else 6),
+        out_channels=(1 if not learn_sigma else 6),
         num_res_blocks=num_res_blocks,
         attention_resolutions=tuple(attention_ds),
         dropout=dropout,
@@ -252,7 +256,7 @@ def create_classifier(
 
     return EncoderUNetModel(
         image_size=image_size,
-        in_channels=3,
+        in_channels=3, #need to change to 1 if use classifier and greyscale
         model_channels=classifier_width,
         out_channels=1000,
         num_res_blocks=classifier_depth,
@@ -365,9 +369,9 @@ def sr_create_model(
 
     return SuperResModel(
         image_size=large_size,
-        in_channels=3,
+        in_channels=3, #need to change to 1 if call this method and greyScale
         model_channels=num_channels,
-        out_channels=(3 if not learn_sigma else 6),
+        out_channels=(1 if not learn_sigma else 6),
         num_res_blocks=num_res_blocks,
         attention_resolutions=tuple(attention_ds),
         dropout=dropout,

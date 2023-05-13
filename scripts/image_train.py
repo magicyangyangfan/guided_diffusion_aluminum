@@ -38,6 +38,7 @@ def main():
         batch_size=args.batch_size,
         image_size=args.image_size,
         class_cond=args.class_cond,
+        use_greyScale=args.use_greyScale,
     )
 
     logger.log("training...")
@@ -62,7 +63,7 @@ def main():
 
 def create_argparser():
     defaults = dict(
-        data_dir="Database",
+        data_dir="/Users/yangyangfan/Documents/DeepAlum/guided-diffusion/Database",
         schedule_sampler="uniform",
         lr=1e-4,
         weight_decay=0.0,
