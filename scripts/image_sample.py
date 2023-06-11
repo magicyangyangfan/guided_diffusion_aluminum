@@ -59,11 +59,11 @@ def main():
         )
         sample = sample_fn(
             model,
-            (args.batch_size, 3, args.image_size, args.image_size),
+            (args.batch_size, 1, args.image_size, args.image_size) if args.use_greyScale else (args.batch_size, 3, args.image_size, args.image_size),
             clip_denoised=args.clip_denoised,
             model_kwargs=model_kwargs,
         )
-        sample = ((sample + 1) * 127.5).clamp(0, 255).to(th.uint8)
+        sample = ((sample + 1) * 127.5).clamp(0, 255).to(th.uint8) #not sure about how this code work for gray scale code
         sample = sample.permute(0, 2, 3, 1)
         sample = sample.contiguous()
 
